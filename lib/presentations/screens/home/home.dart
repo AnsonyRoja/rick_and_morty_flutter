@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty/characters/http/character.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController textController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rick And Morty'),
@@ -19,8 +22,11 @@ class Home extends StatelessWidget {
               Center(
                 child: Stack(
                   children: [
-                    const TextField(
-                      cursorRadius: Radius.circular(10),
+                     TextField(
+                      controller: textController,
+                      decoration: const InputDecoration(filled: true),
+                      cursorRadius: const Radius.circular(35),
+                      
                     ),
                     Positioned(
                       right: 5,
@@ -28,8 +34,14 @@ class Home extends StatelessWidget {
                       width: 30,
                       height: 30,
                       child: FloatingActionButton(
-                        onPressed: () {
-                          // Lógica para el botón flotante
+                        onPressed: () async {
+                            var characters;
+                            print(textController.text);
+                            characters = await getCharacters();
+                            textController.clear();
+                            print(characters);
+  
+
                         },
                         backgroundColor: Colors.blue,
                         child: const Icon(Icons
