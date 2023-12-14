@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:rick_and_morty/characters/http/character.dart';
-import 'package:rick_and_morty/presentations/screens/home/details_characters.dart';
+
+List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 
 class Home extends StatefulWidget {
   String characterName = '';
+
   Home({super.key, characterName});
 
   @override
@@ -14,6 +15,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController textController = TextEditingController();
   Map<String, dynamic> character = {};
+  String selectedGenderFilter = 'Male'; // Valor predeterminado
+  bool isAlphabeticalOrder = false;
+  var dropdownValue = list.first;
 
   // @override
   // void didUpdateWidget(covariant Home oldWidget) {
@@ -96,22 +100,62 @@ class _HomeState extends State<Home> {
                           ),
                         ],
                       ),
+
+                      DropdownButton(
+                        value: dropdownValue,
+                        onChanged: (String? value) {
+                          print('value $value');
+                          // This is called when the user selects an item.
+                          setState(() {
+                            dropdownValue = value!;
+                            print('esto es dropdownvalue $dropdownValue');
+                          });
+                        },
+                        items:
+                            list.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+
+                      //filtros aqui
                       if (character.isNotEmpty)
                         ...character['Api'].map((char) {
                           return Center(
-                            child: Container(
-                              width: 250,
-                              height: 380,
+                            child: Card(
                               margin: const EdgeInsets.all(5),
                               color: Color.fromARGB(255, 18, 188, 151),
                               child: Column(
                                 children: [
-                                  Text(char['name'].toString()),
-                                  Image.network(char['image'].toString()),
-                                  Text('Status: ${char['status']}'),
-                                  Text('Species: ${char['species']}'),
-                                  Text('Gender: ${char['gender']}'),
-                                  Text('Origin: ${char['origin']['name']}'),
+                                  ListTile(
+                                    title: Text(
+                                      char['name'].toString(),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  Image.network(
+                                    char['image'].toString(),
+                                    width: 250,
+                                    height:
+                                        200, // Ajusta la altura de la imagen según tus necesidades
+                                    fit: BoxFit
+                                        .cover, // Ajusta la forma en que la imagen se ajusta dentro del contenedor
+                                  ),
+                                  ListTile(
+                                    title: Text('Status: ${char['status']}'),
+                                  ),
+                                  ListTile(
+                                    title: Text('Species: ${char['species']}'),
+                                  ),
+                                  ListTile(
+                                    title: Text('Gender: ${char['gender']}'),
+                                  ),
+                                  ListTile(
+                                    title: Text(
+                                        'Origin: ${char['origin']['name']}'),
+                                  ),
                                 ],
                               ),
                             ),

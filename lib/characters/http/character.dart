@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'dart:convert';
 
 Future<Map<String, dynamic>> getCharacters() async {
 //Espera dos argumentos el primero es el dominio host, y el segundo es la ruta del recurso en ese dominio
@@ -30,6 +31,17 @@ Future<Map<String, dynamic>> getCharactersName(name) async {
     return {'Api': itemCount};
   } else {
     // If the request fails, you might want to handle the error appropriately
+    throw Exception('Failed to load characters');
+  }
+}
+
+Future<Map<String, dynamic>> getCharactersByGender(String gender) async {
+  final response = await http.get(
+      Uri.parse('https://rickandmortyapi.com/api/character/?gender=$gender'));
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
     throw Exception('Failed to load characters');
   }
 }
