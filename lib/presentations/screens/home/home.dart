@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty/characters/http/character.dart';
 
-List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+List<String> listGender = <String>['All', 'Female', 'Male'];
 
 class Home extends StatefulWidget {
   String characterName = '';
@@ -17,7 +17,8 @@ class _HomeState extends State<Home> {
   Map<String, dynamic> character = {};
   String selectedGenderFilter = 'Male'; // Valor predeterminado
   bool isAlphabeticalOrder = false;
-  var dropdownValue = list.first;
+  var dropdownValue = listGender.first;
+  List<dynamic> originalCharacterss = [];
 
   // @override
   // void didUpdateWidget(covariant Home oldWidget) {
@@ -33,6 +34,7 @@ class _HomeState extends State<Home> {
     var characters = await getCharacters();
     setState(() {
       character = characters;
+      originalCharacterss = characters["Api"];
     });
     print(character);
   }
@@ -106,13 +108,38 @@ class _HomeState extends State<Home> {
                         onChanged: (String? value) {
                           print('value $value');
                           // This is called when the user selects an item.
+                          if (value == "Female" || value == "Male") {
+                            List<Map<String, dynamic>> originalCharacters =
+                                List<Map<String, dynamic>>.from(
+                                    [...originalCharacterss]);
+
+                            List<Map<String, dynamic>> filteredCharacters =
+                                originalCharacters
+                                    .where((char) => char['gender'] == value)
+                                    .toList();
+
+                            setState(() {
+                              // Guarda una copia de los personajes originales antes de aplicar el filtro
+
+                              // Actualiza la lista filtrada al estado
+                              character["Api"] = [...filteredCharacters];
+                            });
+                          } else if (value == "All") {
+                            // Usa un conjunto para eliminar duplicados antes de asignar al estado
+
+                            setState(() {
+                              character["Api"] =
+                                  originalCharacterss.toSet().toList();
+                            });
+                          }
+
                           setState(() {
                             dropdownValue = value!;
                             print('esto es dropdownvalue $dropdownValue');
                           });
                         },
-                        items:
-                            list.map<DropdownMenuItem<String>>((String value) {
+                        items: listGender
+                            .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -126,7 +153,7 @@ class _HomeState extends State<Home> {
                           return Center(
                             child: Card(
                               margin: const EdgeInsets.all(5),
-                              color: Color.fromARGB(255, 18, 188, 151),
+                              color: const Color.fromARGB(255, 18, 188, 151),
                               child: Column(
                                 children: [
                                   ListTile(
